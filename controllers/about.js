@@ -9,7 +9,10 @@ const User = require('../models/user');
 
 exports.getAbout = async (req, res, next) => {
 
-    const about = await About.find()
+    const about = await About.find()        
+        .sort({ createdAt: -1 })
+        .limit(1);
+    console.log(about);
     try {
         if (!about) {
             const error = new Error('Sorry, could not fetch the page at the moment');
@@ -18,7 +21,7 @@ exports.getAbout = async (req, res, next) => {
         }
         res.status(200).json({
             message: 'Page fetched',
-            about: about
+            about: about[0]
         })
     }catch (err) {
         if(!err.statusCode) {

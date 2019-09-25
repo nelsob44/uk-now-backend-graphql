@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const Blogcomment = require('./comment');
+const Blogcomment = require('./commentconst');
 const Schema = mongoose.Schema;
 
 const blogSchema = new Schema({
@@ -26,7 +26,7 @@ const blogSchema = new Schema({
     blogDate: {
         type: Date,
         required: true
-    },
+    },    
     blogLikes: {
         type: Number,
         required: true
@@ -35,11 +35,14 @@ const blogSchema = new Schema({
         {
             type: Blogcomment            
         }
-    ],    
-    blogLikes: {
+    ],     
+    blogNumberOfComments: {
         type: Number,
         required: true
-    },
+    },      
+    blogLikers: [
+        
+    ],
     creator: {
         type: Schema.Types.ObjectId,
         ref: 'User',

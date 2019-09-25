@@ -34,5 +34,6 @@ authController.signup
 );
 
 router.post('/login', authController.login);
+// router.post('/delete/:itemId', authController.deleteItem);
 
 module.exports = router;

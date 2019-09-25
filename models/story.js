@@ -20,13 +20,16 @@ const storySchema = new Schema({
         required: true
     },
     postedOn: {
-        type: Date,
+        type: String,
         required: true
     },
     storyLikes: {
         type: Number,
         required: true
     },
+    storyLikers: [
+        
+    ],
     creator: {
         type: Schema.Types.ObjectId,
         ref: 'User',

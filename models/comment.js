@@ -6,7 +6,19 @@ const commentSchema = new Schema({
         type: String,
         required: true
     },
-    commentUserName: {
+    type: {
+        type: String,
+        required: true
+    }, 
+    blogDate: {
+        type: String,
+        required: true
+    }, 
+    userName: {
+        type: String,
+        required: true
+    }, 
+    creator: {
         type: Schema.Types.ObjectId,
         ref: 'User',
         required: true
@@ -14,5 +26,4 @@ const commentSchema = new Schema({
 },
 { timestamps: true }
 );
-
-module.exports = commentSchema;
+module.exports = mongoose.model('Comment', commentSchema);

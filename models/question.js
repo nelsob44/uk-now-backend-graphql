@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const Blogcomment = require('./comment');
+const Blogcomment = require('./commentconst');
 const Schema = mongoose.Schema;
 
 const questionSchema = new Schema({
@@ -21,6 +21,10 @@ const questionSchema = new Schema({
         }
     ],
     questionUserName: {
+        type: String,
+        required: true
+    },
+    questionUser: {
         type: Schema.Types.ObjectId,
         ref: 'User',
         required: true
