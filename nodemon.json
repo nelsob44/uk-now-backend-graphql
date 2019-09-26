@@ -1,7 +1,6 @@
 {
     "env": {
         "MONGO_USER": "nelsondan",
-        "MONGO_PASSWORD": "nelsondanMi",
-        "MONGO_DEFAULT_DATABASE": "uknow"
+        "MONGO_PASSWORD": "nelsondanMi"        
     }
 }
