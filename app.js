@@ -16,7 +16,7 @@ const storiesRoutes = require('./routes/stories');
 const mentorRoutes = require('./routes/mentor');
 const essentialRoutes = require('./routes/uk-life-essential');
 const localRoutes = require('./routes/your-local');
-const isAuth = require('./middleware/is-auth');
+const emailRoutes = require('./routes/email');
 
 const graphqlHttp = require('express-graphql');
 
@@ -82,7 +82,7 @@ app.put('/post-image', (req, res, next) => {
 app.use('/about', aboutRoutes);
 app.use('/auth', authRoutes);
 
-
+app.use('/email', emailRoutes);
 app.use('/question', questionRoutes);
 app.use('/blog', blogRoutes);
 app.use('/event', eventRoutes);

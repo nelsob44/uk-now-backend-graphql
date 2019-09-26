@@ -8,7 +8,7 @@ const router = express.Router();
 
 
 // router.get('/show', aboutController.getAbout);
-router.post('/list', isAuth, blogController.getBlogs);
+router.post('/list', blogController.getBlogs);
 router.post('/add', isAuth, [
     body('blogTitle').isLength({min: 2}),
     body('blogDetails').isLength({min: 2}),

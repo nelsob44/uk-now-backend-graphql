@@ -3,13 +3,6 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
-const Local = require('../models/local');
-const Event = require('../models/event');
-const Blog = require('../models/blog');
-const Mentor = require('../models/mentor');
-const Question = require('../models/question');
-const Story = require('../models/story');
-const About = require('../models/about');
 
 exports.signup = async (req, res, next) => {
     const errors = validationResult(req);
@@ -73,7 +66,7 @@ exports.login = async (req, res, next) => {
                 userId: loadedUser._id.toString()
             },
             'builtinseptember',
-            { expiresIn: 60 * 60 }
+            { expiresIn: 60 * 60 * 2 }
         );
         res.status(200).json({             
             userId: loadedUser._id.toString(),

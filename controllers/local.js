@@ -62,7 +62,7 @@ exports.addLocal = async (req, res, next) => {
 };
 
 exports.getLocals = async (req, res, next) => {
-  const currentPage = req.body.pageNumber;
+  const currentPage = req.body.pageNumber || 1;
   const perPage = 10;
   try {
     const totalItems = await Local.find().countDocuments();
