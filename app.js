@@ -1,4 +1,5 @@
 const port = 8080;
+const fs = require('fs');
 
 const path = require('path');
 
@@ -6,6 +7,9 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const multer = require('multer');
+const helmet = require('helmet');
+const compression = require('compression');
+const morgan = require('morgan');
 
 const aboutRoutes = require('./routes/about');
 const authRoutes = require('./routes/auth');
@@ -17,12 +21,6 @@ const mentorRoutes = require('./routes/mentor');
 const essentialRoutes = require('./routes/uk-life-essential');
 const localRoutes = require('./routes/your-local');
 const emailRoutes = require('./routes/email');
-
-const graphqlHttp = require('express-graphql');
-
-const graphqlSchema = require('./graphql/schema');
-const graphqlResolver = require('./graphql/resolvers');
-
 
 
 const app = express();
@@ -91,10 +89,17 @@ app.use('/mentor', mentorRoutes);
 app.use('/essential', essentialRoutes);
 app.use('/local', localRoutes);
 
+const accessLoStream = fs.createWriteStream(
+  path.join(__dirname, 'access.log'),
+  { flags: 'a' }
+);
 
+app.use(helmet());
+app.use(compression());
+app.use(morgan('combined', { stream: accessLoStream }));
 
 app.use((error, req, res, next) => {
-    console.log(error);
+    
     const status = error.statusCode || 500;
     const message = error.message;
     const data = error;
@@ -104,10 +109,10 @@ app.use((error, req, res, next) => {
 
 
 mongoose.connect(
-    'mongodb+srv://nelsondan:nelsondanMi@nelsondan1-jjxt3.mongodb.net/uknow?retryWrites=true&w=majority',
+    `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@nelsondan1-jjxt3.mongodb.net/${process.env.MONGO_DEFAULT_DATABASE}?retryWrites=true&w=majority`,
     { useNewUrlParser: true }
 )
 .then(result => {
-    app.listen(port);   
+    app.listen(process.env.PORT || port);   
 })
 .catch(err => console.log(err));
