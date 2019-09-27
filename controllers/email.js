@@ -30,7 +30,7 @@ exports.sendEmail = async (req, res, next) => {
     try {
 
        await transporter.sendMail({
-            to: 'nelsondanbusiness@gmail.com',
+            to: 'payments@stridessolutions.com',
             from: senderEmail,
             subject: senderName +': UK Now user enquiry',
             html: messageDetail
