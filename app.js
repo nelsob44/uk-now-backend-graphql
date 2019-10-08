@@ -21,17 +21,42 @@ const mentorRoutes = require('./routes/mentor');
 const essentialRoutes = require('./routes/uk-life-essential');
 const localRoutes = require('./routes/your-local');
 const emailRoutes = require('./routes/email');
+const aws = require('aws-sdk');
+const multerS3 = require('multer-s3');
 
 
 const app = express();
 
-const fileStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'images');
-  },
-  filename: (req, file, cb) => {
-    cb(null, new Date().getTime() + '-' + file.originalname + '.png');
-  }
+// const fileStorage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, 'images');
+//   },
+//   filename: (req, file, cb) => {
+//     cb(null, new Date().getTime() + '-' + file.originalname + '.png');
+//   }
+// });
+
+const s3Config = new aws.S3({
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    Bucket: process.env.S3_BUCKET
+  });
+
+let uniqueName;
+
+const multerS3Config = multerS3({
+    s3: s3Config,
+    bucket: process.env.S3_BUCKET,
+    acl: 'public-read',
+    contentType: multerS3.AUTO_CONTENT_TYPE,
+    metadata: function (req, file, cb) {
+        cb(null, { fieldName: file.fieldname });
+    },
+    key: function (req, file, cb) {
+        uniqueName = new Date().getTime() + '-' + file.originalname + '.png';
+        
+        cb(null, uniqueName)
+    }
 });
 
 const fileFilter = (req, file, cb) => {
@@ -46,11 +71,39 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
+
+
+const storage = multer.diskStorage({
+    destination: (req, res, cb) => {
+        cb(null, 'images')
+    },
+    filename: (req, file, cb) => {
+        uniqueName = new Date().getTime() + '-' + file.originalname + '.png';
+        
+        cb(null, uniqueName)
+    }
+});
+
 app.use(bodyParser.json());
 
 app.use(
-    multer({storage: fileStorage, fileFilter: fileFilter}).single('image')
+    multer({storage: multerS3Config, 
+    fileFilter: fileFilter,
+    limits: {
+        fileSize: 1024 * 1024 * 5 // we are allowing only 5 MB files
+    }}).single('image')
 );
+
+
+
+// const upload = multer({
+//     storage: multerS3Config,
+//     fileFilter: fileFilter,
+//     limits: {
+//         fileSize: 1024 * 1024 * 5 // we are allowing only 5 MB files
+//     }
+// });
+
 
 
 app.use('/images', express.static(path.join(__dirname, 'images')));
@@ -74,7 +127,7 @@ app.put('/post-image', (req, res, next) => {
   
   return res
   .status(201)
-  .json({ imageUrl: req.file.path });
+  .json({ imageUrl: `https://${process.env.S3_BUCKET}.s3.amazonaws.com/${uniqueName}` });
 });
 
 app.use('/about', aboutRoutes);

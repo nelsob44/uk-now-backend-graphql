@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/nelsob44/uk-now-backend-graphql#readme",
   "dependencies": {
+    "aws-sdk": "^2.538.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
     "compression": "^1.7.4",
@@ -36,6 +37,7 @@
     "mongoose": "^5.6.11",
     "morgan": "^1.9.1",
     "multer": "^1.4.2",
+    "multer-s3": "^2.9.0",
     "nodemailer": "^6.3.0",
     "nodemailer-sendgrid-transport": "^0.2.0",
     "nodemon": "^1.19.1",

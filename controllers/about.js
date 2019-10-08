@@ -12,7 +12,7 @@ exports.getAbout = async (req, res, next) => {
     const about = await About.find()        
         .sort({ createdAt: -1 })
         .limit(1);
-    console.log(about);
+   
     try {
         if (!about) {
             const error = new Error('Sorry, could not fetch the page at the moment');

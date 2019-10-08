@@ -1,6 +1,9 @@
 {
     "env": {
         "MONGO_USER": "nelsondan",
-        "MONGO_PASSWORD": "nelsondanMi"        
+        "MONGO_PASSWORD": "nelsondanMi",
+        "AWS_ACCESS_KEY_ID": "AKIAIPY2YI23NMKWNQIA",
+        "AWS_SECRET_ACCESS_KEY": "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",
+        "S3_BUCKET": "uknowimages"       
     }
 }
