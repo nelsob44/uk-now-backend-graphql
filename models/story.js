@@ -30,6 +30,10 @@ const storySchema = new Schema({
     storyLikers: [
         
     ],
+    youtubeLinkString: {
+        type: String,
+        required: false
+    },
     creator: {
         type: Schema.Types.ObjectId,
         ref: 'User',

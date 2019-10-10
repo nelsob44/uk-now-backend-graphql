@@ -30,6 +30,7 @@ exports.addStory = async (req, res, next) => {
     const userName = user.firstname + ' ' + user.lastname;
     const postedOn = req.body.postedOn;
     const storyLikes = req.body.storyLikes;
+    const youtubeLinkString = req.body.youtubeLinkString;
     const creator = req.userId;
     
 
@@ -41,6 +42,7 @@ exports.addStory = async (req, res, next) => {
         postedOn: postedOn,
         storyLikes: storyLikes,
         storyLikers: [],
+        youtubeLinkString: youtubeLinkString,
         creator: creator        
     });
     
@@ -135,6 +137,7 @@ exports.updateStory = async (req, res, next) => {
     const storyImage = req.body.storyImage.replace("\\" ,"/");
     const storyTitle = req.body.storyTitle;
     const storyDetail = req.body.storyDetails;    
+    const youtubeLinkString = req.body.youtubeLinkString;
     
     
     if(!errors.isEmpty()) {
@@ -157,7 +160,8 @@ exports.updateStory = async (req, res, next) => {
         
         story.storyImage = storyImage;
         story.storyTitle = req.body.storyTitle;
-        story.storyDetail = storyDetail;        
+        story.storyDetail = storyDetail; 
+        story.youtubeLinkString = youtubeLinkString;       
         
                 
         const result = await story.save();
