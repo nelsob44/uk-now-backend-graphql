@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+const ratingLocal = require('./ratingsconst');
 const Schema = mongoose.Schema;
 
 const localSchema = new Schema({
@@ -24,9 +24,13 @@ const localSchema = new Schema({
         required: true
     },
     localRating: {
-        type: Number,
-        required: true
+        type: Number
     },
+    ratings: [
+        {
+            type: ratingLocal            
+        }
+    ],
     creator: {
         type: Schema.Types.ObjectId,
         ref: 'User',

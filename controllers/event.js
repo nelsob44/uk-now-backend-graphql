@@ -157,7 +157,7 @@ exports.deleteItem = async (req, res, next) => {
     await Event.deleteOne({_id: itemId});    
 
     // io.getIO().emit('posts', { action: 'delete', post: postId });
-    res.status(200).json({ message: 'Event Blog.' });
+    res.status(200).json({ message: 'Event Deleted.' });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;

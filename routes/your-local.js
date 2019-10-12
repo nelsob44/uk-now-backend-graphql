@@ -23,6 +23,7 @@ router.post('/update/:localId', isAuth, [
     body('localContact').isLength({min: 2})
 ],
  localController.updateLocal);
+router.put('/rating/:localId', isAuth, localController.updateRating);
 router.post('/delete/:itemId', isAuth, localController.deleteItem);
 // router.put('/update', localController.updateAbout);
 

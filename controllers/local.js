@@ -4,6 +4,7 @@ const path = require('path');
 const { validationResult } = require('express-validator');
 
 const Local = require('../models/local');
+const Rating = require('../models/rating');
 const User = require('../models/user');
 
 
@@ -135,6 +136,53 @@ exports.updateLocal = async (req, res, next) => {
         }
         next(err);
     }
+};
+
+exports.updateRating = async (req, res, next) => {
+  const localId = req.params.localId;
+   
+  const localRating = parseInt(req.body.localRating, 10);   
+   
+  if(!req.body.localRating) {        
+      const error = new Error('No rating provided');
+      error.statusCode = 422;
+      throw error;
+  }
+   
+  try {      
+      const local = await Local.findById(localId);
+
+      const rating = new Rating({
+        localRatingNo: localRating,
+        ratingDate: new Date().getTime(),
+        creator: req.userId
+      });
+
+      const result = await rating.save();
+
+      local.ratings.push(result);
+     
+      const numberOfRatings = local.ratings.length;
+     
+      let total = 0;
+
+      await local.ratings.forEach(r => {
+        total += r.localRatingNo;
+      });
+                 
+      local.localRating = total / numberOfRatings;   
+                              
+      newLocal = await local.save();
+      
+      res.status(201).json({
+         local: newLocal            
+      });
+  } catch(err) {
+      if(!err.statusCode) {
+          err.statusCode = 500;
+      }
+      next(err);
+  }
 };
 
 exports.deleteItem = async (req, res, next) => {
