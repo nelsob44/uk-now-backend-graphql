@@ -8,7 +8,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "MONGO_USER=nelsondan MONGO_PASSWORD=nelsondanMi node app.js",
+    "start": "MONGO_USER= MONGO_PASSWORD= node app.js",
     "start-server": "node app.js",
     "start:dev": "nodemon app.js"
   },
