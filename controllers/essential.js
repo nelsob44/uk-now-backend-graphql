@@ -195,13 +195,14 @@ exports.getQuiz = async (req, res, next) => {
   const currentPage = req.query.page || 1;
   const perPage = 20;
   
-  const tookQuizBefore = await Result.find({ userId: req.userId }).countDocuments();
   
-  if(tookQuizBefore > 0) {
-
-    return;
-  }
   try {
+    const tookQuizBefore = await Result.find({ userId: req.userId }).countDocuments();
+  
+    if(tookQuizBefore > 0) {
+
+      return;
+    }
     const totalItems = await Quiz.find().countDocuments();
     const quizzes = await Quiz.find()      
       .sort({ createdAt: -1 })

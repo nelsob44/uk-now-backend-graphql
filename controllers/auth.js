@@ -66,7 +66,7 @@ exports.login = async (req, res, next) => {
                 userId: loadedUser._id.toString()
             },
             'builtinseptember',
-            { expiresIn: 60 * 60 * 2 }
+            { expiresIn: '2h' }
         );
         res.status(200).json({             
             userId: loadedUser._id.toString(),
