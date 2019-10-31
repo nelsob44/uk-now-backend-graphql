@@ -18,7 +18,11 @@ router.post('/update/:essentialId', isAuth, [
 ],
  essentialController.updateEssential);
 router.post('/delete/:itemId', isAuth, essentialController.deleteItem);
-// router.put('/update', aboutController.updateAbout);
+router.post('/delete-quiz', isAuth, essentialController.deleteQuiz);
+router.post('/quiz', isAuth, essentialController.addQuiz);
+router.post('/quiz-submit', isAuth, essentialController.submitQuiz);
+router.post('/get-quiz', isAuth, essentialController.getQuiz);
+router.post('/get-quiz-results', isAuth, essentialController.getQuizResults);
 
 
 module.exports = router;

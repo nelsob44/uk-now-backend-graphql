@@ -1,13 +1,17 @@
 const fs = require('fs');
 const path = require('path');
+const bcrypt = require('bcryptjs');
 
 const { validationResult } = require('express-validator');
 
 const Essential = require('../models/essential');
+const Quiz = require('../models/quiz');
 const User = require('../models/user');
+const Result = require('../models/result');
 
 
 exports.addEssential = async (req, res, next) => {
+  console.log(req.body);
     const errors = validationResult(req);
 
     if(!errors.isEmpty()) {
@@ -53,6 +57,170 @@ exports.addEssential = async (req, res, next) => {
         next(err);
     }
 };
+
+exports.addQuiz = async (req, res, next) => {
+     
+    const questionSubject = req.body.subject;    
+    const questionImage = req.body.theImage.replace("\\" ,"/");
+    const questionDetail = req.body.questionDetail;
+    const questionAnswerFirst = req.body.questionAnswer.toLowerCase().replace(/\s/g, "");
+        
+    hashedQuestionAnswer = await bcrypt.hash(questionAnswerFirst, 12);
+    
+    const quiz = new Quiz({
+        questionSubject: questionSubject,
+        questionDetail: questionDetail,
+        questionImage: questionImage, 
+        questionAnswer: hashedQuestionAnswer,            
+        creator: req.userId        
+    });
+    
+    try {
+        await quiz.save();
+        
+        res.status(201).json({
+            message: 'Quiz added',
+            quiz: quiz            
+        });
+    } catch(err) {
+        if(!err.statusCode) {
+            err.statusCode = 500;
+        }
+        next(err);
+    }
+};
+
+exports.submitQuiz = async (req, res, next) => {     
+  
+  const tookQuizBefore = await Result.find({ userId: req.userId });
+  // console.log(tookQuizBefore.length > 0);
+  if(tookQuizBefore.length > 0) {
+    return;
+  }
+
+  const formValues = Object.entries(req.body);
+  
+  const enteredAns = [];
+  let rightAns = [];
+  const hashedAnsArray = [];
+  const countArray = [];
+
+  const user = await User.findById(req.userId);
+
+  
+  try {
+        await formValues.forEach(q => {
+          if(q[0].indexOf('answer_') > -1) {
+            
+            enteredAns.push(q[1]);
+          }
+
+          if(q[0].indexOf('quizAnswer_') > -1) {
+            
+            rightAns.push(q[1]);
+          }
+        }); 
+
+        await Promise.all(enteredAns.map(async (a) => {
+          hashedAns = a.toLowerCase().replace(/\s/g, "");
+          
+          hashedAnsArray.push(hashedAns);
+
+        }));
+        
+        for(let i=0; i < rightAns.length; i++) {
+          for(let j=0; j < hashedAnsArray.length; j++) {
+            if(i === j) {
+              const isEqual = await bcrypt.compare(hashedAnsArray[j], rightAns[i]);
+              if(isEqual) {
+                countArray.push(hashedAnsArray[j]);
+              }
+            }
+          }
+        }
+
+        const arrayLength = countArray.length;
+        const rightAnsArrayLength = rightAns.length;
+        const score = Math.round(arrayLength/rightAnsArrayLength * 100);
+        
+        const result = new Result({
+          userName: user.firstname + ' ' + user.lastname,
+          userId: req.userId,
+          subject: formValues[2][1],
+          score: score            
+        });
+
+        await result.save();
+        
+        res.status(200).json({
+          message: 'Quiz successfully processed',
+          score: score    
+        });
+    } catch(err) {
+        if(!err.statusCode) {
+            err.statusCode = 500;
+        }
+        next(err);
+  }  
+  
+};
+
+
+exports.getQuizResults = async (req, res, next) => {
+  const currentPage = req.query.page || 1;
+  const perPage = 100;
+      
+  try {
+    
+    const totalItems = await Result.find().countDocuments();
+    const results = await Result.find()      
+      .sort({ createdAt: 1 })
+      .skip((currentPage - 1) * perPage)
+      .limit(perPage);
+    
+    res.status(201).json({
+      message: 'Fetched results successfully.',
+      results: results,
+      totalItems: totalItems
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
+exports.getQuiz = async (req, res, next) => {
+  const currentPage = req.query.page || 1;
+  const perPage = 20;
+  
+  const tookQuizBefore = await Result.find({ userId: req.userId }).countDocuments();
+  
+  if(tookQuizBefore > 0) {
+
+    return;
+  }
+  try {
+    const totalItems = await Quiz.find().countDocuments();
+    const quizzes = await Quiz.find()      
+      .sort({ createdAt: -1 })
+      .skip((currentPage - 1) * perPage)
+      .limit(perPage);
+    
+    res.status(200).json({
+      message: 'Fetched quizzes successfully.',
+      quizzes: quizzes,
+      totalItems: totalItems
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
 
 exports.getEssentials = async (req, res, next) => {
   const currentPage = req.query.page || 1;
@@ -122,6 +290,24 @@ exports.updateEssential = async (req, res, next) => {
         }
         next(err);
     }
+};
+
+exports.deleteQuiz = async (req, res, next) => {
+  const questionSubject = req.body.subject;
+  
+  try {    
+
+    await Quiz.deleteMany({ questionSubject : questionSubject });
+
+    await Result.deleteMany({ subject : questionSubject });
+        
+    res.status(200).json({ message: 'Quiz deleted' });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
 };
 
 exports.deleteItem = async (req, res, next) => {
