@@ -82,6 +82,25 @@ exports.getEvents = async (req, res, next) => {
   }
 };
 
+exports.getEvent = async (req, res, next) => {
+  const eventId = req.body.id;
+  
+  try {
+    
+    const event = await Event.findById(eventId);  
+    
+    res.status(200).json({
+      message: 'Event fetched',
+      event: event
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
 exports.updateEvent = async (req, res, next) => {
     const eventId = req.params.eventId;
     const errors = validationResult(req);

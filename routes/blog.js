@@ -18,6 +18,7 @@ router.post('/update/:blogId', isAuth, blogController.updateBlog);
 router.put('/like/:blogId', isAuth, blogController.updateBlogLike);
 router.put('/comment/:blogId', isAuth, blogController.addBlogComment);
 router.post('/delete/:itemId', isAuth, blogController.deleteItem);
+router.post('/:blogId', blogController.getBlog);
 
 
 module.exports = router;

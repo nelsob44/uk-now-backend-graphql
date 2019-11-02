@@ -233,6 +233,26 @@ exports.getBlogs = async (req, res, next) => {
   }
 };
 
+exports.getBlog = async (req, res, next) => {
+  const blogId = req.body.id;
+  
+  try {
+    
+    const blog = await Blog.findById(blogId);  
+    
+    res.status(200).json({
+      message: 'Blog fetched',
+      blog: blog
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
+
 exports.deleteItem = async (req, res, next) => {
   const itemId = req.params.itemId;
     

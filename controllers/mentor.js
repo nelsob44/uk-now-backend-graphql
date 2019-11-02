@@ -82,6 +82,25 @@ exports.getMentors = async (req, res, next) => {
   }
 };
 
+exports.getMentor = async (req, res, next) => {
+  const mentorId = req.body.id;
+  
+  try {
+    
+    const mentor = await Mentor.findById(mentorId);  
+    
+    res.status(200).json({
+      message: 'Mentor fetched',
+      mentor: mentor
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
 exports.updateMentor = async (req, res, next) => {
     const mentorId = req.params.mentorId;
     const errors = validationResult(req);

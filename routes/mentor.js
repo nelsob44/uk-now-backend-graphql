@@ -25,7 +25,7 @@ router.post('/update/:mentorId', isAuth, [
 ],
  mentorController.updateMentor);
 router.post('/delete/:itemId', isAuth, mentorController.deleteItem);
-// router.put('/update', aboutController.updateAbout);
+router.post('/:mentorId', isAuth, mentorController.getMentor);
 
 
 module.exports = router;

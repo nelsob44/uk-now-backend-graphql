@@ -20,6 +20,7 @@ router.post('/update/:storyId', isAuth, [
     body('storyDetails').isLength({min: 2}),
 ], storyController.updateStory);
 router.post('/delete/:itemId', isAuth, storyController.deleteItem);
+router.post('/:storyId', isAuth, storyController.getStory);
 
 
 module.exports = router;

@@ -22,6 +22,7 @@ router.post('/update/:eventId', isAuth, [
 ], eventController.updateEvent);
 
 router.post('/delete/:itemId', isAuth, eventController.deleteItem);
+router.post('/:eventId', eventController.getEvent);
 
 
 module.exports = router;

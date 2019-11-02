@@ -88,6 +88,26 @@ exports.getStories = async (req, res, next) => {
   }
 };
 
+exports.getStory = async (req, res, next) => {
+  const storyId = req.body.id;
+  
+  try {
+    
+    const story = await Story.findById(storyId);  
+    
+    res.status(200).json({
+      message: 'Story fetched',
+      story: story
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
+
 exports.updateStoryLike = async (req, res, next) => {
     const storyId = req.params.storyId;
     const errors = validationResult(req);    
