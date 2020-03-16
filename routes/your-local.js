@@ -9,6 +9,7 @@ const router = express.Router();
 
 // router.get('/show', localController.getAbout);
 router.post('/list', isAuth, localController.getLocals);
+router.post('/list-filter', isAuth, localController.getLocalsFilter);
 router.post('/add', isAuth, [
     body('localName').isLength({min: 2}),
     body('localType').isLength({min: 2}),

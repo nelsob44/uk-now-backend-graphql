@@ -82,6 +82,30 @@ exports.getMentors = async (req, res, next) => {
   }
 };
 
+exports.getMentorsFilter = async (req, res, next) => {
+  const currentPage = req.body.pageNumber || 1;
+  const perPage = 10;
+  const mentorField = req.body.mentorField;
+  try {
+    const totalItems = await Mentor.find().countDocuments();
+    const mentors = await Mentor.find({"mentorField" : mentorField})      
+      .sort({ createdAt: -1 })
+      .skip((currentPage - 1) * perPage)
+      .limit(perPage);
+    
+    res.status(200).json({
+      message: 'Fetched mentors successfully.',
+      mentors: mentors,
+      totalItems: totalItems
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
 exports.getMentor = async (req, res, next) => {
   const mentorId = req.body.id;
   

@@ -9,6 +9,7 @@ const router = express.Router();
 
 // router.get('/show', aboutController.getAbout);
 router.post('/list', isAuth, mentorController.getMentors);
+router.post('/list-filter', isAuth, mentorController.getMentorsFilter);
 router.post('/add', isAuth, [
     body('mentorUserName').isLength({min: 2}),
     body('mentorProfile').isLength({min: 2}),

@@ -9,6 +9,7 @@ const router = express.Router();
 
 // router.get('/show', aboutController.getAbout);
 router.post('/list', isAuth, storyController.getStories);
+router.post('/list-filter', isAuth, storyController.getStoriesFilter);
 router.post('/add', isAuth, [
     body('storyTitle').isLength({min: 2}),
     body('storyDetails').isLength({min: 2}),

@@ -18,6 +18,7 @@ const blogRoutes = require('./routes/blog');
 const eventRoutes = require('./routes/local-event');
 const storiesRoutes = require('./routes/stories');
 const mentorRoutes = require('./routes/mentor');
+const messageRoutes = require('./routes/message');
 const essentialRoutes = require('./routes/uk-life-essential');
 const localRoutes = require('./routes/your-local');
 const emailRoutes = require('./routes/email');
@@ -139,6 +140,7 @@ app.use('/blog', blogRoutes);
 app.use('/event', eventRoutes);
 app.use('/story', storiesRoutes);
 app.use('/mentor', mentorRoutes);
+app.use('/message', messageRoutes);
 app.use('/essential', essentialRoutes);
 app.use('/local', localRoutes);
 

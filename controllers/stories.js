@@ -88,6 +88,30 @@ exports.getStories = async (req, res, next) => {
   }
 };
 
+exports.getStoriesFilter = async (req, res, next) => {
+  const currentPage = req.body.pageNumber || 1;
+  const perPage = 10;
+  const storyTitle = req.body.storyTitle;
+  try {
+    const totalItems = await Story.find().countDocuments();
+    const stories = await Story.find({"storyTitle" : storyTitle})      
+      .sort({ createdAt: -1 })
+      .skip((currentPage - 1) * perPage)
+      .limit(perPage);
+    
+    res.status(200).json({
+      message: 'Fetched stories successfully.',
+      stories: stories,
+      totalItems: totalItems
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
 exports.getStory = async (req, res, next) => {
   const storyId = req.body.id;
   

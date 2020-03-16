@@ -85,6 +85,32 @@ exports.getLocals = async (req, res, next) => {
   }
 };
 
+exports.getLocalsFilter = async (req, res, next) => {
+  const currentPage = req.body.pageNumber || 1;
+  const perPage = 10;
+  const localType = req.body.localType;
+  try {
+    const totalItems = await Local.find().countDocuments();
+    
+      const locals = await Local.find({"localType" : localType})      
+      .sort({ createdAt: -1 })
+      .skip((currentPage - 1) * perPage)
+      .limit(perPage);
+
+      res.status(200).json({
+      message: 'Fetched locals successfully.',
+      locals: locals,
+      totalItems: totalItems
+    });    
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
+
 exports.updateLocal = async (req, res, next) => {
     const localId = req.params.localId;
     const errors = validationResult(req);

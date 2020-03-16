@@ -233,6 +233,31 @@ exports.getBlogs = async (req, res, next) => {
   }
 };
 
+exports.getBlogsFilter = async (req, res, next) => {
+  const currentPage = req.body.pageNumber || 1;
+  const perPage = 10;
+  const blogTitle = req.body.blogTitle;
+  
+  try {
+    const totalItems = await Blog.find().countDocuments();
+    const blogs = await Blog.find({"blogTitle" : blogTitle})      
+      .sort({ createdAt: -1 })
+      .skip((currentPage - 1) * perPage)
+      .limit(perPage);
+          
+    res.status(200).json({
+      message: 'Fetched blogs successfully.',
+      blogs: blogs,
+      totalItems: totalItems
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
 exports.getBlog = async (req, res, next) => {
   const blogId = req.body.id;
   

@@ -22,6 +22,12 @@ const userSchema = new Schema({
         type: Number,
         default: 3
     },
+    details: {
+        type: String
+    },
+    profilePic: {
+        type: String
+    },
     questions: [
         {
             type: Schema.Types.ObjectId,

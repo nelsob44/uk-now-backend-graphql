@@ -1,6 +1,6 @@
 const express = require('express');
 const { body, validationResult } = require('express-validator');
-
+const isAuth = require('../middleware/is-auth');
 const User = require('../models/user');
 const authController = require('../controllers/auth');
 
@@ -32,7 +32,8 @@ router.post('/signup', [
 ],
 authController.signup 
 );
-
+router.post('/update-profile', isAuth, authController.updateProfile);
+router.post('/user', isAuth, authController.getProfile);
 router.post('/login', authController.login);
 // router.post('/delete/:itemId', authController.deleteItem);
 
