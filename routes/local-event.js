@@ -9,6 +9,7 @@ const router = express.Router();
 
 // router.get('/show', aboutController.getAbout);
 router.post('/list', eventController.getEvents);
+router.post('/list-filter', eventController.getEventsFilter);
 router.post('/add', isAuth, [
     body('eventName').isLength({min: 2}),
     body('eventDetails').isLength({min: 2}),

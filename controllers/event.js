@@ -82,6 +82,30 @@ exports.getEvents = async (req, res, next) => {
   }
 };
 
+exports.getEventsFilter = async (req, res, next) => {
+  const currentPage = req.body.pageNumber || 1;
+  const perPage = 10;
+  const eventName = req.body.eventName;
+  try {
+    const totalItems = await Event.find().countDocuments();
+    const events = await Event.find({"eventName" : eventName})      
+      .sort({ createdAt: -1 })
+      .skip((currentPage - 1) * perPage)
+      .limit(perPage);
+    
+    res.status(200).json({
+      message: 'Fetched events successfully.',
+      events: events,
+      totalItems: totalItems
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
 exports.getEvent = async (req, res, next) => {
   const eventId = req.body.id;
   
