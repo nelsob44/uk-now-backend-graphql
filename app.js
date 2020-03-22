@@ -168,6 +168,10 @@ mongoose.connect(
     { useNewUrlParser: true }
 )
 .then(result => {
-    app.listen(process.env.PORT || port);   
+    const server = app.listen(process.env.PORT || port); 
+    const io = require('./socket').init(server);  
+    io.on('connection', socket => {
+      console.log('client is connected');
+    });
 })
 .catch(err => console.log(err));

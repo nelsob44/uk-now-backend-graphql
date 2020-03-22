@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const { validationResult } = require('express-validator');
+const io = require('../socket');
 
 const Message = require('../models/message');
 const User = require('../models/user');
@@ -20,7 +21,8 @@ exports.addMessage = async (req, res, next) => {
     const messageTo = req.body.messageTo;
     const messageImage = req.body.messageImage.replace("\\" ,"/");
     const messageDetails = req.body.messageDetails;
-    const messageTime = new Date().getTime();    
+    const messageTime = new Date().getTime(); 
+    const messageRead = false;   
     const creator = req.userId; 
     const session = [];
     session.push(messageFrom);
@@ -33,13 +35,14 @@ exports.addMessage = async (req, res, next) => {
         messageSession: session,
         messageDetails: messageDetails,
         messageImage: messageImage,
-        messageTime: messageTime,        
+        messageTime: messageTime, 
+        messageRead: messageRead,       
         creator: creator        
     });
     
     try {
         await message.save();
-
+        io.getIO().emit('message', { action: 'addMessage', message: message });
         res.status(201).json({ message: message });
     } catch(err) {
         if(!err.statusCode) {
@@ -70,22 +73,53 @@ exports.getMessages = async (req, res, next) => {
   }
 };
 
-exports.getMessagesFilter = async (req, res, next) => {
-  const currentPage = req.body.pageNumber || 1;
-  const perPage = 10;
-  const mentorField = req.body.mentorField;
+exports.updateReadMessages = async (req, res, next) => {
+    const currentPage = req.body.pageNumber || 1;
+    const perPage = 10;
+    const messageFrom = req.body.messageFrom;
+    const messageTo = req.body.messageTo;
+    const messageIds = [];
+    
   try {
-    const totalItems = await Mentor.find().countDocuments();
-    const mentors = await Mentor.find({"mentorField" : mentorField})      
-      .sort({ createdAt: -1 })
+      const messages = await Message.find({ 
+        messageSession: { $all: [messageFrom, messageTo] }, 
+        messageRead: false, messageFrom: messageTo 
+      }).sort({ createdAt: -1 })
       .skip((currentPage - 1) * perPage)
       .limit(perPage);
-    
-    res.status(200).json({
-      message: 'Fetched mentors successfully.',
-      mentors: mentors,
-      totalItems: totalItems
+      
+    messages.forEach(msg => {
+      msg.messageRead = true;
+      messageIds.push(msg._id);
+      msg.save();
     });
+    
+    res.status(200).json({ messages: messages });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
+exports.getMessagesFilter = async (req, res, next) => {
+  
+  const messagesFrom = [];
+  const messageTo = req.body.messageTo;
+  
+  try {
+      const messages = await Message.find({ messageTo: messageTo, messageRead: false })      
+      .sort({ createdAt: -1 });
+
+      messages.forEach(msg => {   
+        let sendingUser = msg.messageFrom + '/' + msg.creator;
+        if(!messagesFrom.includes(sendingUser)) {
+          messagesFrom.push(sendingUser);
+        }      
+      });      
+          
+    res.status(200).json({ messagesFrom: messagesFrom });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
@@ -114,9 +148,8 @@ exports.deleteItem = async (req, res, next) => {
     user.mentors.pull(itemId);
     await user.save();
     
-    await Mentor.deleteOne({_id: itemId});    
-
-    // io.getIO().emit('posts', { action: 'delete', post: postId });
+    await Mentor.deleteOne({_id: itemId});   
+    
     res.status(200).json({ message: 'Mentor deleted' });
   } catch (err) {
     if (!err.statusCode) {

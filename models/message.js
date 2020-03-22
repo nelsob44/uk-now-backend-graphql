@@ -24,6 +24,10 @@ const messageSchema = new Schema({
     messageTime: {
         type: Date
     },
+    messageRead: {
+        type: Boolean,
+        required: true
+    },
     creator: {
         type: Schema.Types.ObjectId,
         ref: 'User',
