@@ -131,7 +131,7 @@ exports.submitQuiz = async (req, res, next) => {
         for(let i=0; i < rightAns.length; i++) {
           for(let j=0; j < hashedAnsArray.length; j++) {
             if(i === j) {
-              const isEqual = await bcrypt.compare(hashedAnsArray[j], rightAns[i]);
+              let isEqual = await bcrypt.compare(hashedAnsArray[j], rightAns[i]);
               if(isEqual) {
                 countArray.push(hashedAnsArray[j]);
               }
@@ -150,7 +150,7 @@ exports.submitQuiz = async (req, res, next) => {
           score: score            
         });
 
-        await result.save();
+        const userResult = await result.save();
         
         res.status(200).json({
           message: 'Quiz successfully processed',
@@ -161,7 +161,7 @@ exports.submitQuiz = async (req, res, next) => {
             err.statusCode = 500;
         }
         next(err);
-  }  
+    }  
   
 };
 
@@ -201,19 +201,26 @@ exports.getQuiz = async (req, res, next) => {
   
     if(tookQuizBefore > 0) {
 
+      res.status(200).json({
+        message: 'Quiz taken before.',
+        quizzes: [],
+        totalItems: 0
+      });
       return;
+    } else {
+      const totalItems = await Quiz.find().countDocuments();
+      const quizzes = await Quiz.find()      
+        .sort({ createdAt: -1 })
+        .skip((currentPage - 1) * perPage)
+        .limit(perPage);
+      
+      res.status(200).json({
+        message: 'Fetched quizzes successfully.',
+        quizzes: quizzes,
+        totalItems: totalItems
+      });
     }
-    const totalItems = await Quiz.find().countDocuments();
-    const quizzes = await Quiz.find()      
-      .sort({ createdAt: -1 })
-      .skip((currentPage - 1) * perPage)
-      .limit(perPage);
     
-    res.status(200).json({
-      message: 'Fetched quizzes successfully.',
-      quizzes: quizzes,
-      totalItems: totalItems
-    });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
