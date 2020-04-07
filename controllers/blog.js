@@ -34,6 +34,7 @@ exports.addBlog = async (req, res, next) => {
     const blogFirstName = user.firstname;
     const blogLastName = user.lastname;
     const blogNumberOfComments = 0;
+    const youtubeLinkString = req.body.youtubeLinkString;
 
     const blog = new Blog({
         blogTitle: blogTitle,
@@ -43,6 +44,7 @@ exports.addBlog = async (req, res, next) => {
         blogLastName: blogLastName,
         blogDate: blogDate,
         blogLikes: blogLikes,
+        youtubeLinkString: youtubeLinkString,
         blogComments: [],
         blogNumberOfComments: blogNumberOfComments,
         creator: req.userId
@@ -68,13 +70,12 @@ exports.addBlog = async (req, res, next) => {
 
 exports.updateBlog = async (req, res, next) => {
     const blogId = req.params.blogId;
-    const errors = validationResult(req);
-    
+    const errors = validationResult(req);    
     const blogImage = req.body.blogImage.replace("\\" ,"/");
     const blogTitle = req.body.blogTitle;
-    const blogDetails = req.body.blogDetails;    
+    const blogDetails = req.body.blogDetails;
     const blogLikes = req.body.blogLikes;
-        
+    const youtubeLinkString = req.body.youtubeLinkString;
     const blogNumberOfComments = req.body.blogNumberOfComments;
     
     if(!errors.isEmpty()) {
@@ -96,9 +97,10 @@ exports.updateBlog = async (req, res, next) => {
         const blog = await Blog.findById(blogId).populate('creator');
         
         blog.blogImage = blogImage;
-        blog.blogTitle = req.body.blogTitle;
+        blog.blogTitle = blogTitle;
         blog.blogDetails = blogDetails;        
         blog.blogLikes = blogLikes;
+        blog.youtubeLinkString = youtubeLinkString;
         blog.blogNumberOfComments = blogNumberOfComments;
                 
         const result = await blog.save();

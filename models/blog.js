@@ -31,6 +31,10 @@ const blogSchema = new Schema({
         type: Number,
         required: true
     },
+    youtubeLinkString: {
+        type: String,
+        required: false
+    },
     blogComments: [
         {
             type: Blogcomment            
