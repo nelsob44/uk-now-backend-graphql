@@ -104,7 +104,7 @@ exports.submitQuiz = async (req, res, next) => {
   let rightAns = [];
   const hashedAnsArray = [];
   const countArray = [];
-
+  
   const user = await User.findById(req.userId);
 
   
@@ -138,6 +138,7 @@ exports.submitQuiz = async (req, res, next) => {
             }
           }
         }
+  
 
         const arrayLength = countArray.length;
         const rightAnsArrayLength = rightAns.length;
@@ -149,8 +150,8 @@ exports.submitQuiz = async (req, res, next) => {
           subject: formValues[2][1],
           score: score            
         });
-
-        const userResult = await result.save();
+        
+        result.save();
         
         res.status(200).json({
           message: 'Quiz successfully processed',
@@ -160,8 +161,7 @@ exports.submitQuiz = async (req, res, next) => {
         if(!err.statusCode) {
             err.statusCode = 500;
         }
-        next(err);
-    }  
+        next(err)}  
   
 };
 
