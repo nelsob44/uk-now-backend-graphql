@@ -46,6 +46,7 @@
     "nodemailer-sendgrid-transport": "^0.2.0",
     "nodemon": "^1.19.4",
     "socket.io": "^2.3.0",
-    "validator": "^11.1.0"
+    "validator": "^11.1.0",
+    "webpack-dev-server": "^3.11.0"
   }
 }
