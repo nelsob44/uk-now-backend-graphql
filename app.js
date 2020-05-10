@@ -109,17 +109,17 @@ app.use(
 
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
-// app.use((req, res, next) => {
+app.use((req, res, next) => {
     
-//     res.setHeader('Access-Control-Allow-Origin', '*');
-//     res.setHeader('Access-Control-Allow-Credentials', true);
-//     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
-//     res.setHeader('Access-Control-Allow-Headers', 'Authorization, Origin, X-Requested-With, Content-Type, Accept, content-type, application/json');
-//     if(req.method === 'OPTIONS') {
-//       return res.sendStatus(200);
-//     }
-//     next();
-// });
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Authorization, Origin, X-Requested-With, Content-Type, Accept, content-type, application/json');
+    if(req.method === 'OPTIONS') {
+      return res.sendStatus(200);
+    }
+    next();
+});
 
 app.put('/post-image', (req, res, next) => {
   
