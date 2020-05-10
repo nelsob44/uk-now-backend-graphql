@@ -1,2 +1,3 @@
-node_modules
-nodemon.json
+lib/
+/node_modules
+/nodemon.json
