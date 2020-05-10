@@ -166,7 +166,7 @@ app.use((error, req, res, next) => {
 
 mongoose.connect(
     `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@nelsondan1-jjxt3.mongodb.net/uknow?retryWrites=true&w=majority`,
-    { useNewUrlParser: true, useUnifiedTopology: true }
+    { useNewUrlParser: true }
 )
 .then(result => {
     const server = app.listen(process.env.PORT || port); 
