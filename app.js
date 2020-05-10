@@ -27,7 +27,7 @@ const multerS3 = require('multer-s3');
 
 
 const app = express();
-// app.cache = {};
+app.cache = {};
 // const fileStorage = multer.diskStorage({
 //   destination: (req, file, cb) => {
 //     cb(null, 'images');
