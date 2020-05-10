@@ -1,36 +1,65 @@
 const { validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const mailgun = require('mailgun-js')({apiKey: process.env.MAILGUN_KEY, domain: process.env.DOMAIN, host: process.env.HOST});
+
 
 const User = require('../models/user');
 
 exports.signup = async (req, res, next) => {
     const errors = validationResult(req);
 
-    if(!errors.isEmpty()) {
-        console.log(req.body);
-        const error = new Error('Validation failed');
-        error.statusCode = 422;
-        error.data = errors.array();
-        throw error;
-    }
-
-    const firstname = req.body.firstname;
-    const lastname = req.body.lastname;
-    const email = req.body.email;
-    const password = req.body.password;
-
     try {
+        if(!errors.isEmpty()) {
+        
+            const error = new Error(errors.errors[0].msg);
+            
+            error.statusCode = 422;
+            error.data = errors.array();
+            throw error;
+        }
+
+        const firstname = req.body.firstname;
+        const lastname = req.body.lastname;
+        const email = req.body.email;
+        const password = req.body.password;
+        const tokenString = await bcrypt.hash(email, 12);
+                
+        const frontUrl = await process.env.FRONT_URL;
+        const urlencode1 = await tokenString.replace(/\//g, "a");
+        const urlencode = await urlencode1.replace(/\\/g, "a");
+                
+        const url = frontUrl + '/verify-email/' + email + '/' + urlencode;
+        const html = `<p>You have received this email because you signed up on UK Now. Click or copy and paste the link below into your browser to verify your email <br><br>
+            ${url} </p> <br> The UK Now Team`;
+
+        let data = {
+            from: 'no-reply@uknow.com',
+            to: email,
+            subject: 'Verify your email',
+            html: html
+        };
         const hashedPassword = await bcrypt.hash(password, 12);
 
         const user = new User({
             firstname: firstname,
             lastname: lastname,
             email: email,
-            password: hashedPassword
+            password: hashedPassword,
+            token: urlencode
         });
 
         const result = await user.save();
+        
+        
+        mailgun.messages().send(data, function (error, body) {
+            if(error) {
+                console.log(error);
+            } else {
+                console.log(body);
+            }    
+        });
+
         res.status(201).json({ message: 'New user created!', userId: result._id });
     } catch(err) {
         if(!err.statusCode) {

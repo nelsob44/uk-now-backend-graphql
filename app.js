@@ -27,7 +27,7 @@ const multerS3 = require('multer-s3');
 
 
 const app = express();
-
+// app.cache = {};
 // const fileStorage = multer.diskStorage({
 //   destination: (req, file, cb) => {
 //     cb(null, 'images');
@@ -164,7 +164,7 @@ app.use((error, req, res, next) => {
 
 mongoose.connect(
     `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@nelsondan1-jjxt3.mongodb.net/uknow?retryWrites=true&w=majority`,
-    { useNewUrlParser: true }
+    { useNewUrlParser: true, useUnifiedTopology: true }
 )
 .then(result => {
     const server = app.listen(process.env.PORT || port); 

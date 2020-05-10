@@ -6,7 +6,7 @@ const isAuth = require('../middleware/is-auth');
 
 const router = express.Router();
 
-
+router.post('/resend', isAuth, emailController.reSendEmail);
 
 router.post('/send', isAuth, [
     body('senderName').isLength({min: 2}),
@@ -15,6 +15,8 @@ router.post('/send', isAuth, [
     .normalizeEmail(),
     body('messageDetail').isLength({min: 5})
 ],
- emailController.sendEmail);
+ emailController.sendEmailToAdmin);
+
+router.post('/verify-email', emailController.sendEmailVerification);
 
 module.exports = router;

@@ -11,6 +11,10 @@ const resultSchema = new Schema({
         type: String,
         required: true
     },
+    isWinner: {
+        type: Boolean,
+        default: false
+    },
     subject: {
         type: String,
         required: true

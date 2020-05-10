@@ -23,6 +23,7 @@ router.post('/quiz', isAuth, essentialController.addQuiz);
 router.post('/quiz-submit', isAuth, essentialController.submitQuiz);
 router.post('/get-quiz', isAuth, essentialController.getQuiz);
 router.post('/get-quiz-results', isAuth, essentialController.getQuizResults);
+router.post('/update-result', isAuth, essentialController.updateQuizResults);
 
 
 module.exports = router;

@@ -18,6 +18,13 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
+    token: {
+        type: String
+    },
+    verified: {
+        type: Boolean,
+        default: false
+    },
     status: {
         type: Number,
         default: 3

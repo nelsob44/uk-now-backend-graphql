@@ -93,7 +93,7 @@ exports.addQuiz = async (req, res, next) => {
 exports.submitQuiz = async (req, res, next) => {     
   
   const tookQuizBefore = await Result.find({ userId: req.userId });
-  // console.log(tookQuizBefore.length > 0);
+  
   if(tookQuizBefore.length > 0) {
     return;
   }
@@ -168,11 +168,42 @@ exports.submitQuiz = async (req, res, next) => {
 
 exports.getQuizResults = async (req, res, next) => {
   const currentPage = req.query.page || 1;
-  const perPage = 100;
+  const perPage = 200;
       
   try {
     
     const totalItems = await Result.find().countDocuments();
+    const results = await Result.find()      
+      .sort({ createdAt: 1 })
+      .skip((currentPage - 1) * perPage)
+      .limit(perPage);
+    
+    res.status(201).json({
+      message: 'Fetched results successfully.',
+      results: results,
+      totalItems: totalItems
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
+exports.updateQuizResults = async (req, res, next) => {
+  const currentPage = req.query.page || 1;
+  const perPage = 200;
+  const userId = req.body.userId;
+      
+  try {
+    const totalItems = await Result.find().countDocuments();
+    const result = await Result.findOne({ userId: userId });
+    
+    result.isWinner = !result.isWinner;
+
+    await result.save();
+
     const results = await Result.find()      
       .sort({ createdAt: 1 })
       .skip((currentPage - 1) * perPage)
