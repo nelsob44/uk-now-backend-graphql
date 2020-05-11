@@ -35,6 +35,17 @@ authController.signup
 router.post('/update-profile', isAuth, authController.updateProfile);
 router.post('/user', isAuth, authController.getProfile);
 router.post('/login', authController.login);
+router.post('/sendpasswordresetlink', [body('email')
+    .isEmail()], authController.sendPasswordResetEmail);
 // router.post('/delete/:itemId', authController.deleteItem);
+router.post('/resetpassword', [body('token')
+    .trim()
+    .not()
+    .isEmpty(),
+    body('password')
+    .trim()
+    .isLength({min: 5}),
+    body('email')
+    .isEmail()], authController.resetPassword);
 
 module.exports = router;

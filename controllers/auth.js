@@ -54,9 +54,8 @@ exports.signup = async (req, res, next) => {
         
         mailgun.messages().send(data, function (error, body) {
             if(error) {
-                console.log(error);
-            } else {
-                console.log(body);
+                new Error('Sorry, there was a problem encountered sending your verification email');
+                throw error;
             }    
         });
 
@@ -68,6 +67,59 @@ exports.signup = async (req, res, next) => {
         next(err);
     }
 };
+
+exports.sendPasswordResetEmail = async (req, res, next) => {
+    const errors = validationResult(req);
+    const email = req.body.email;
+
+    try {
+        if(!errors.isEmpty()) {        
+            const error = new Error(errors.errors[0].msg);
+            
+            error.statusCode = 422;
+            error.data = errors.array();
+            throw error;
+        }
+        const datenow = new Date().toISOString();
+        const user = await User.findOne({ email: email });
+        const tokenString = await bcrypt.hash(email + datenow, 12);
+                
+        const frontUrl = await process.env.FRONT_URL;
+        const urlencode1 = await tokenString.replace(/\//g, "a");
+        const urlencode = await urlencode1.replace(/\\/g, "a");
+                
+        const url = frontUrl + '/response-reset/' + urlencode;
+        const html = `<p>You have received this email because you signed up on UK Now. Click or copy and paste the link below into your browser to reset your password <br><br>
+            ${url} </p> <br> The UK Now Team`;
+
+        let data = {
+            from: 'no-reply@uknow.com',
+            to: email,
+            subject: 'Reset your password',
+            html: html
+        };
+        
+        user.token = urlencode;
+        
+        const result = await user.save();
+        
+        
+        mailgun.messages().send(data, function (error, body) {
+            if(error) {
+                new Error('Sorry, there was a problem encountered sending your reset email');
+                throw error;
+            }  
+        });
+
+        res.status(201).json({ message: 'Password reset link has been sent to your email' });
+    } catch(err) {
+        if(!err.statusCode) {
+            err.statusCode = 500;
+        }
+        next(err);
+    }
+};
+
 
 exports.updateProfile = async (req, res, next) => {
         
@@ -116,6 +168,29 @@ exports.updateProfile = async (req, res, next) => {
             email: loadedUser.email,
             profilePic: loadedUser.profilePic
         });
+    } catch(err) {
+        if(!err.statusCode) {
+            err.statusCode = 500;
+        }
+        next(err);
+    }
+};
+
+exports.resetPassword = async (req, res, next) => {
+        
+    const token = req.body.resetToken;
+    const password = req.body.password;
+    const email = req.body.email;
+          
+    try {         
+        const user = await User.findOne({ email: email, token: token }); 
+        
+        const hashedPassword = await bcrypt.hash(password, 12);
+        user.password = hashedPassword;
+
+        await user.save();
+
+        res.status(201).json({ message: 'Your password reset is complete. You can now login with your new password' });
     } catch(err) {
         if(!err.statusCode) {
             err.statusCode = 500;
